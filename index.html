@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Validation</title>
+<style>
+    body {
+        background-color: #121212;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+    }
+   
+    .container {
+        text-align: center;
+        background: #1e1e1e;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        width: 350px;
+    
+    }
+    .container:hover {
+        transform: scale(1.05);
+    }
+    input {
+        display: block;
+        margin: 15px auto;
+        padding: 12px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        width: 85%;
+        background-color: #292929;
+        color: white;
+        font-size: 16px;
+    }
+    input:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 5px #4CAF50;
+    }
+    button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      
+    }
+    button:hover {
+        background-color: #74e474;
+    }
+    h2 {
+        margin-bottom: 20px;
+    }
+    .error {
+        color: #ff4d4d;
+        font-size: 14px; 
+    }
+    .fetch-container {
+    text-align: center;
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    width: 500;
+    margin-top: 20px; 
+    margin-left: 50px;
+    }
+    p{
+            text-align: start;
+    }
+    .fetch-container:hover {
+        transform: scale(1.05);
+    }
+    
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Register</h2>
+    <form id="myForm">
+        <input type="text" id="name" placeholder="Full Name">
+        <span id="nameError" class="error"></span>
+
+        <input type="email" id="email" placeholder="Email">
+        <span id="emailError" class="error"></span>
+
+       <input type="password" id="password" placeholder="Password">
+        <span id="passwordError" class="error"></span>
+      
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<div class="fetch-container">
+    <h2>Fetch the Data From API</h2>
+    <button id="fetchData">Click</button>
+    <p id="userID"></p>
+</div>
+
+
+<script>
+   
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    let isValid = true;
+    let name = document.getElementById("name").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
+
+    // Clear previous errors
+    document.getElementById("nameError").innerText = "";
+    document.getElementById("emailError").innerText = "";
+    document.getElementById("passwordError").innerText = "";
+    
+    // Validate Name
+    if (name == "") {
+        document.getElementById("nameError").innerText = "Name is required";
+        isValid = false;
+    }
+
+    // Validate Email
+    let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email == "") {
+        document.getElementById("emailError").innerText = "Email is required";
+        isValid = false;
+    } else if (!emailPattern.test(email)) {
+        document.getElementById("emailError").innerText = "Invalid email format";
+        isValid = false;
+    }
+
+    // Validate Password
+    let passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (password === "") {
+        document.getElementById("passwordError").innerText = "Password is required";
+        isValid = false;
+    } else if (!passwordPattern.test(password)) {
+        document.getElementById("passwordError").innerText = "Password must be at least 8 characters, with letters & numbers";
+        isValid = false;
+    } 
+    // If everything is valid, submit form
+    if (isValid) {
+        alert("Form submitted successfully!");
+        this.submit(); 
+    }
+});
+
+// ES6+ Arrow Function Example
+const multiply = (a, b) => a * b;
+console.log(multiply(2, 3));
+
+// Promise Example
+const fetchData = () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => resolve("Data received"), 2000);
+    });
+};
+
+fetchData().then(data => console.log(data));
+
+// Async & Await 
+
+const getData = async () => {
+    let response = await fetchData();
+    console.log(response);
+};
+getData();
+
+// consume API  with Async/Await & Add a loading indicator when fetching API data.
+
+document.getElementById("fetchData").addEventListener("click", async () => {
+    const userContainer = document.getElementById("userID");
+    userContainer.innerText = "Loading..."; 
+
+    try {
+        let response = await fetch("https://jsonplaceholder.typicode.com/users");
+        let users = await response.json();
+        
+        userContainer.innerText = ""; 
+        users.forEach(user => userContainer.innerText+='● '+user.name+' - '+user.email+"\n");
+    } catch {
+        userContainer.innerText = "Failed to load data.";
+    }
+});
+
+
+
+
+ // Bonus Challenges:
+
+  //Store form data in local storage for persistence.
+  document.getElementById("name").addEventListener("input", function() {
+        localStorage.setItem("name", document.getElementById("name").value);
+    });
+
+    document.getElementById("email").addEventListener("input", function() {
+        localStorage.setItem("email", document.getElementById("email").value);
+    });
+
+    document.getElementById("password").addEventListener("input", function() {
+        localStorage.setItem("password", document.getElementById("password").value);
+    });
+
+    window.onload = () => {
+        let name = localStorage.getItem("name");
+        let email = localStorage.getItem("email");
+        let password = localStorage.getItem("password");
+        if (name) {
+            document.getElementById("name").value = name;
+        }
+        if (email) {
+            document.getElementById("email").value = email;
+        }
+        if (password) {
+            document.getElementById("password").value = password;
+        }
+    };
+
+
+
+
+//Implement advanced password validation to block common weak passwords.
+const weakPasswords = new Set(["123456", "password", "11111111", "admin", "000000"]);
+document.getElementById("password").addEventListener("input", () => {
+    let password = document.getElementById("password").value;
+    let passwordError = document.getElementById("passwordError");
+    console.log(password); 
+    passwordError.innerText = weakPasswords.has(password) ? "Weak password! Please use a stronger one." : "";
+});
+
+
+</script>
+
+</body>
+</html>
